@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APPSSULE - Gaming Community</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Font: Nanum Pen Script -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #0a0b10;
+      --card-bg: #14161f;
+      --border-color: #262a3a;
+      --neon-green: #10b981;
+      --neon-blue: #0088ff;
+      --neon-red: #ff3b5c;
+      --neon-orange: #f59e0b;
+      --neon-purple: #8b5cf6;
+      --neon-pink: #ff5db0;
+      --text-main: #e9eaf0;
+      --text-muted: #9497a8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nanum Pen Script', cursive, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ---------------- AUTH MODAL ---------------- */
+    #auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-box {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 24px;
+      padding: 30px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .auth-logo {
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+    .auth-logo span:nth-child(1) { color: var(--neon-red); }
+    .auth-logo span:nth-child(2) { color: var(--neon-blue); }
+    .auth-logo span:nth-child(3) { color: var(--text-main); }
+
+    /* Auth Tab Switcher */
+    .auth-tabs {
+      display: flex;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 6px;
+      font-size: 1.5rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .auth-tab.active {
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .auth-form {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .auth-form.active {
+      display: flex;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 10px 15px;
+      font-size: 1.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      outline: none;
+      background: var(--card-bg);
+      color: var(--text-main);
+    }
+
+    .auth-input:focus {
+      border-color: var(--neon-blue);
+      background: #fff;
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 10px;
+      font-size: 1.8rem;
+      background: var(--neon-green);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      background: #0ea5e9;
+    }
+
+    /* Error Message Box */
+    .auth-error {
+      color: var(--neon-red);
+      font-size: 1.4rem;
+      display: none;
+      background: rgba(255, 59, 92, 0.1);
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid var(--neon-red);
+    }
+
+    /* ---------------- APP HEADER ---------------- */
+    header {
+      height: 60px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 20;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--neon-green);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .menu-toggle-btn:hover {
+      background: rgba(16, 185, 129, 0.1);
+      transform: scale(1.05);
+    }
+
+    .coins-badge {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .coins-badge:hover {
+      border-color: var(--neon-orange);
+      transform: translateY(-1px);
+    }
+
+    /* Caps dropdown menu */
+    .caps-menu-wrapper { position: relative; }
+    .caps-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 240px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      padding: 8px;
+      z-index: 60;
+      display: none;
+    }
+    .caps-menu.open { display: block; }
+    .caps-menu-balance {
+      padding: 10px 12px 12px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .caps-menu-balance .amount {
+      display: block;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--neon-orange);
+      line-height: 1.1;
+    }
+    .caps-menu-balance .label {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .caps-menu-item {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.4rem;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .caps-menu-item:hover { background: rgba(255,255,255,0.06); }
+    .caps-menu-item i { width: 18px; color: var(--text-muted); }
+
+    .coin-icon {
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ffe600, #ff9100);
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(255, 145, 0, 0.6);
+    }
+
+    .header-logo {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+
+    .header-logo span:nth-child(1) { color: var(--neon-red); }
+    .header-logo span:nth-child(2) { color: var(--neon-blue); }
+    .header-logo span:nth-child(3) { color: var(--text-main); }
+
+    .icon-badge {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .streak-badge {
+      background: #fff7ed;
+      border: 1px solid #fde68a;
+      padding: 6px 12px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--neon-orange);
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card-bg);
+      padding: 4px 12px 4px 6px;
+      border-radius: 25px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-main);
+      user-select: none;
+    }
+
+    .username-text {
+      font-weight: 600;
+      font-size: 1.4rem;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ffaa00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* ---------------- APP LAYOUT & SIDEBAR ---------------- */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+      position: relative;
+    }
+
+    sidebar {
+      width: 90px;
+      background-color: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      gap: 15px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+      sidebar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -90px;
+        z-index: 15;
+        transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+      }
+      sidebar.open {
+        left: 0;
+      }
+    }
+
+    .nav-btn {
+      width: 64px;
+      height: 64px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1.1rem;
+      gap: 2px;
+    }
+
+    .nav-btn i { font-size: 1.2rem; }
+
+    .nav-btn.active {
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .nav-btn:nth-child(2) i { color: var(--neon-red); }
+    .nav-btn:nth-child(3) i { color: var(--neon-purple); }
+    .nav-btn:nth-child(4) i { color: var(--neon-green); }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      background: #edf2f7;
+    }
+
+    /* ---------------- MAIN VIEWS ---------------- */
+    main {
+      flex: 1;
+      position: relative;
+      background-color: var(--card-bg);
+      overflow-y: auto;
+      width: 100%;
+    }
+
+    .view-section {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+
+    .view-section.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- HOME SCREEN --- */
+    #view-home {
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      background: radial-gradient(1100px 600px at 50% 25%, #171a24 0%, #0a0b10 70%);
+    }
+
+    /* --- MARKETPLACE SCREEN (same shapes background as Home, no logo/reward) --- */
+    #view-marketplace {
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(1100px 600px at 50% 15%, #171a24 0%, #0a0b10 70%);
+    }
+    #view-marketplace .market-content {
+      position: relative;
+      z-index: 2;
+    }
+    /* Push the shared shapes toward the edges here so they don't collide with market cards */
+    #view-marketplace .square-green { top: 4%; right: 3%; opacity: 0.45; transform: rotate(45deg) scale(0.8); }
+    #view-marketplace .pentagon-orange { display: none; }
+    #view-marketplace .triangle-red { top: 68%; left: 3%; opacity: 0.4; transform: scale(0.7); }
+    #view-marketplace .triangle-red-right { bottom: 4%; right: 5%; opacity: 0.4; transform: rotate(25deg) scale(0.8); }
+    #view-marketplace .circle-blue { bottom: 6%; left: 45%; opacity: 0.35; transform: scale(0.7); }
+
+    .hero-title {
+      text-align: center;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .diagonal-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .diagonal-logo .app {
+      font-size: 10.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ff3b5c;
+      text-shadow: 0 0 25px rgba(255, 59, 92, 0.25);
+      transform: translate(-65px, -4px);
+      line-height: 0.85;
+    }
+
+    .diagonal-logo .ssule {
+      font-size: 10.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      transform: translate(42px, 4px);
+      line-height: 0.85;
+    }
+    .diagonal-logo .ssule .s-letter {
+      color: #0088ff;
+      text-shadow: 0 0 25px rgba(0, 136, 255, 0.25);
+    }
+    .diagonal-logo .ssule .sule-letters {
+      color: var(--text-main);
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 2.8rem;
+      margin-top: 10px;
+    }
+
+    .shape {
+      position: absolute;
+      animation: float 6s ease-in-out infinite alternate;
+    }
+
+    .square-green {
+      width: 140px; height: 140px; background: var(--neon-green); top: 10%; right: 12%; transform: rotate(45deg); border-radius: 16px;
+      filter: drop-shadow(0 0 22px rgba(16, 185, 129, 0.65));
+    }
+    .pentagon-orange {
+      width: 100px; height: 100px; background: var(--neon-orange); top: 25%; left: 10%; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); animation-delay: -2s;
+      filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.6));
+    }
+    .triangle-red {
+      width: 0; height: 0; border-left: 45px solid transparent; border-right: 45px solid transparent; border-bottom: 75px solid var(--neon-red); top: 12%; left: 28%; animation-delay: -1s;
+      filter: drop-shadow(0 0 18px rgba(255, 59, 92, 0.6));
+    }
+    .triangle-red-right {
+      width: 0; height: 0; border-left: 45px solid transparent; border-right: 45px solid transparent; border-bottom: 75px solid var(--neon-red); bottom: 18%; right: 12%; transform: rotate(25deg); animation-delay: -3s;
+      filter: drop-shadow(0 0 18px rgba(255, 59, 92, 0.6));
+    }
+    .circle-blue {
+      width: 90px; height: 90px; background: var(--neon-blue); border-radius: 50%; bottom: 16%; left: 28%; animation-delay: -4s;
+      filter: drop-shadow(0 0 18px rgba(0, 136, 255, 0.6));
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    .daily-reward-card {
+      position: absolute;
+      bottom: 30px; right: 30px;
+      background: linear-gradient(135deg, #ffe066 0%, #ff9100 100%);
+      padding: 15px 25px;
+      border-radius: 20px;
+      color: #3d2000;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 10px 20px rgba(255, 145, 0, 0.3);
+      cursor: pointer;
+      transition: transform 0.2s;
+      z-index: 10;
+    }
+
+    .daily-reward-card:hover { transform: scale(1.05); }
+
+    /* --- PAGE INTERFACES --- */
+    .page-header {
+      font-size: 3.5rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      border-bottom: 2px dashed var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    /* DMs View with Search User Feature */
+    .chat-container {
+      display: flex;
+      height: 100%;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .dm-sidebar {
+      width: 300px;
+      background: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+    .search-user-box {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .search-user-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1.4rem;
+      outline: none;
+    }
+    .dm-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .dm-item {
+      padding: 12px 15px;
+      font-size: 1.6rem;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+    .dm-item:hover { background: #edf2f7; }
+    .dm-item.active {
+      background: var(--card-bg);
+      color: var(--neon-blue);
+      font-weight: bold;
+    }
+    .chat-window {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+    }
+    .chat-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 2rem;
+      font-weight: bold;
+      background: #fafafa;
+    }
+    .messages-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .message-bubble {
+      background: var(--card-bg);
+      padding: 10px 15px;
+      border-radius: 12px;
+      font-size: 1.5rem;
+      max-width: 60%;
+    }
+    .message-bubble.mine {
+      align-self: flex-end;
+      background: var(--neon-blue);
+      color: white;
+    }
+    .chat-input-area {
+      padding: 15px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Marketplace Layout */
+    .market-layout {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .market-feature-card {
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--card-bg);
+      border: 1px solid #ff5db055;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 0 20px -8px var(--neon-pink);
+    }
+    .feature-header {
+      background: linear-gradient(120deg, var(--neon-purple), var(--neon-pink));
+      color: #ffffff;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      padding: 12px;
+    }
+    .feature-body {
+      padding: 16px 18px 20px;
+    }
+    .feature-body h4 {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+    .feature-body p {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+    .feature-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 14px 0;
+    }
+    .feature-bullets li {
+      font-size: 1.35rem;
+      color: var(--text-muted);
+      padding-left: 16px;
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .feature-bullets li::before {
+      content: "-";
+      position: absolute;
+      left: 0;
+      color: var(--neon-green);
+    }
+    .feature-price {
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.6rem;
+      color: var(--neon-green);
+    }
+    .feature-price small {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .market-pricing { flex: 1; min-width: 280px; }
+
+    /* Custom Bundle */
+    .custom-bundle-card {
+      margin-top: 24px;
+      max-width: 420px;
+      background: var(--card-bg);
+      border: 1px solid #0088ff55;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 0 20px -8px var(--neon-blue);
+    }
+    .custom-toggle {
+      display: flex;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 14px;
+    }
+    .custom-toggle-btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 1.3rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .custom-toggle-btn.active {
+      background: var(--neon-blue);
+      color: #ffffff;
+      font-weight: bold;
+    }
+    .custom-preview {
+      margin: 14px 0;
+      font-size: 1.5rem;
+      color: var(--text-main);
+      min-height: 28px;
+    }
+    .custom-preview .rate-note {
+      display: block;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .custom-buy-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Caps Store (spend Caps on cosmetics, not real money) */
+    .store-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .store-item-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .store-item-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 18px -6px var(--item-color, var(--neon-purple));
+    }
+    .store-item-art {
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--item-color, var(--neon-purple)) 0%, #0a0b10 140%);
+    }
+    .store-item-art i {
+      font-size: 2.6rem;
+      color: #ffffff;
+    }
+    .store-item-body {
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .store-item-body h3 {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+    }
+    .store-item-buy {
+      width: 100%;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--neon-orange);
+      font-weight: 700;
+      font-size: 1.35rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .store-item-buy:hover { border-color: var(--neon-orange); }
+
+    /* Big Back Theme card: warm food-gradient art + floating emoji */
+    .theme-item-card {
+      cursor: pointer;
+      grid-column: span 2;
+    }
+    .theme-item-art {
+      position: relative;
+      height: 120px;
+      background: linear-gradient(120deg, #ff9d3d 0%, #ff3b5c 100%);
+      overflow: hidden;
+    }
+    .theme-emoji {
+      position: absolute;
+      font-size: 2.6rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+      animation: theme-bob 3.5s ease-in-out infinite;
+    }
+    .theme-emoji.e1 { top: 18%; left: 10%; animation-delay: 0s; }
+    .theme-emoji.e2 { top: 55%; left: 30%; animation-delay: -1s; font-size: 2.2rem; }
+    .theme-emoji.e3 { top: 15%; left: 55%; animation-delay: -2s; font-size: 3rem; }
+    .theme-emoji.e4 { top: 50%; left: 78%; animation-delay: -0.5s; font-size: 2.3rem; }
+    @keyframes theme-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .theme-item-tagline {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .theme-buy-btn {
+      background: linear-gradient(120deg, #ff9d3d, #ff3b5c);
+      border: none;
+      color: #ffffff;
+    }
+    .theme-buy-btn:hover { filter: brightness(1.1); }
+
+    /* Themed purchase-confirmation modal (used for the Big Back Theme) */
+    .theme-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .theme-modal-overlay.open { display: flex; }
+    .theme-modal-box {
+      width: 380px;
+      max-width: 90vw;
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .theme-modal-header {
+      background: linear-gradient(120deg, #ff9d3d 0%, #ff3b5c 100%);
+      padding: 22px 16px;
+      font-size: 2.2rem;
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+    .theme-modal-header .theme-emoji {
+      position: absolute;
+      font-size: 2.2rem;
+      opacity: 0.85;
+    }
+    .theme-modal-body {
+      padding: 18px 20px 22px;
+      text-align: left;
+    }
+    .theme-modal-body p {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .theme-perk-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px 0;
+      font-size: 1.3rem;
+    }
+    .theme-perk-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--border-color);
+      color: var(--text-main);
+    }
+    .theme-perk-list li span:last-child { color: var(--neon-orange); font-weight: 600; }
+    .theme-modal-close {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(120deg, #ff9d3d, #ff3b5c);
+      color: #ffffff;
+      font-size: 1.6rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .market-pricing h2 {
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .price-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .price-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 16px -4px var(--price-color, var(--neon-orange));
+    }
+    .price-header {
+      background: var(--price-color, #06070b);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.5rem;
+      text-align: center;
+      padding: 10px;
+    }
+    .price-body {
+      text-align: center;
+      padding: 14px;
+      font-size: 1.6rem;
+      color: var(--text-main);
+    }
+
+    /* Hubs Grid */
+    .hubs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .hub-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .hub-card:hover { transform: translateY(-5px); }
+    .hub-card i { font-size: 3rem; margin-bottom: 10px; color: var(--neon-blue); }
+    .hub-card h3 { font-size: 2rem; }
+
+    /* Hubs Sub-header (Back to Lobby + Contact Support) */
+    .hub-subheader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .hub-back-link {
+      background: none;
+      border: none;
+      color: var(--neon-blue);
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+    }
+    .hub-back-link:hover { text-decoration: underline; }
+    .hub-support-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    .hub-support-btn:hover { color: var(--text-main); border-color: var(--neon-blue); }
+
+    /* Hubs Toolbar (search + sort) */
+    .hub-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .hub-search-input {
+      flex: 1;
+      padding: 10px 18px;
+      font-size: 1.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--card-bg);
+      color: var(--text-main);
+      outline: none;
+    }
+    .hub-search-input:focus { border-color: var(--neon-blue); }
+    .hub-sort-select {
+      padding: 10px 14px;
+      font-size: 1.4rem;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--card-bg);
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* "Create Your Own Server!" CTA below the grid */
+    .hub-create-btn {
+      margin-top: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-size: 1.6rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .hub-create-btn:hover { transform: translateY(-2px); border-color: var(--neon-green); }
+    .hub-create-btn .plus-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      color: #06281c;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    /* Hub Tiles */
+    .hub-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 20px;
+    }
+    .hub-tile {
+      position: relative;
+      height: 150px;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid var(--tile-color, var(--neon-blue));
+      box-shadow: 0 0 18px -4px var(--tile-color, var(--neon-blue));
+      transition: transform 0.2s ease;
+    }
+    .hub-tile:hover { transform: translateY(-4px); }
+    .hub-tile-art {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--tile-color, var(--neon-blue)) 0%, #0a0b10 130%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.9;
+    }
+    .hub-tile-art i {
+      font-size: 3.4rem;
+      color: rgba(255,255,255,0.85);
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.4));
+    }
+    .hub-tile-label {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 10px 14px;
+      background: linear-gradient(0deg, rgba(0,0,0,0.75) 20%, transparent 100%);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-align: left;
+    }
+    .hub-tile-caption {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+    .hub-slot {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Empty slot placeholder */
+    .hub-tile-empty {
+      height: 150px;
+      border-radius: 16px;
+      border: 2px dashed var(--border-color);
+      background: linear-gradient(135deg, #1a1d29 45%, #0e0f16 100%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 12px 14px;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+    .hub-tile-empty:hover {
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+    }
+
+    /* Pagination */
+    .hub-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .page-arrow, .page-num {
+      min-width: 36px;
+      height: 36px;
+      padding: 0 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-arrow:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .page-num.active {
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+      font-weight: bold;
+    }
+    .page-ellipsis {
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      padding: 0 4px;
+    }
+
+    /* Clips View */
+    .clips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .clip-card {
+      background: #000;
+      color: white;
+      height: 350px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Profile / You View */
+    .profile-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #ffaa00;
+      font-size: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Overlay (Email Login & Register) -->
+  <div id="auth-overlay">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <span>APP</span><span>S</span><span>sule</span>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Register</button>
+      </div>
+
+      <div class="auth-error" id="authError">Incorrect email or password!</div>
+
+      <!-- Login Form (Email & Password) -->
+      <form id="form-login" class="auth-form active" onsubmit="return false;">
+        <input type="email" id="loginEmail" class="auth-input" placeholder="Email Address" value="sleepyyy@gmail.com" required>
+        <input type="password" id="loginPassword" class="auth-input" placeholder="Password" value="sleepyyy123" required>
+        <button type="button" class="auth-btn" onclick="handleLogin(event)">Sign In</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="form-register" class="auth-form" onsubmit="return false;">
+        <input type="text" id="registerUsername" class="auth-input" placeholder="Username" required>
+        <input type="email" id="registerEmail" class="auth-input" placeholder="Email Address" required>
+        <input type="password" id="registerPassword" class="auth-input" placeholder="Create Password" required>
+        <button type="button" class="auth-btn" style="background: var(--neon-blue);" onclick="handleRegister(event)">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Top Header Bar -->
+  <header>
+    <div class="header-left">
+      <button class="menu-toggle-btn" id="menuToggle">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="caps-menu-wrapper">
+        <div class="coins-badge" id="capsBadge" title="Caps">
+          <div class="coin-icon"></div>
+          <span id="coinCount">100</span>
+        </div>
+
+        <div class="caps-menu" id="capsMenu">
+          <div class="caps-menu-balance">
+            <span class="amount" id="capsMenuAmount">100</span>
+            <span class="label">Caps balance</span>
+          </div>
+          <button class="caps-menu-item" onclick="capsMenuGo('marketplace')"><i class="fa-solid fa-cart-shopping"></i> Buy Caps</button>
+          <button class="caps-menu-item" onclick="capsMenuGo('home')"><i class="fa-solid fa-gift"></i> Claim Daily Reward</button>
+          <button class="caps-menu-item" onclick="capsMenuGo('capsstore')"><i class="fa-solid fa-store"></i> Caps Store</button>
+        </div>
+      </div>
+      
+      <div class="header-logo" onclick="switchView('home')">
+        <span>APP</span><span>S</span><span>sule</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="icon-badge">
+        <i class="fa-solid fa-bell"></i>
+      </div>
+
+      <div class="streak-badge">
+        <span id="streakCount">365</span>
+        <i class="fa-solid fa-fire"></i>
+      </div>
+
+      <button class="user-profile" onclick="switchView('you')">
+        <span class="username-text" id="headerUsername">Gamemaster</span>
+        <div class="avatar" id="headerAvatar">🐱</div>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Body Layout -->
+  <div class="app-container">
+    <!-- Pop-out Left Sidebar Nav -->
+    <sidebar id="sidebar">
+      <div class="nav-btn active" id="btn-hubs" onclick="switchView('hubs')">
+        <i class="fa-solid fa-arrow-pointer"></i>
+        <span>Hubs</span>
+      </div>
+      <div class="nav-btn" id="btn-dms" onclick="switchView('dms')">
+        <i class="fa-solid fa-comments"></i>
+        <span>DMs</span>
+      </div>
+      <div class="nav-btn" id="btn-marketplace" onclick="switchView('marketplace')">
+        <i class="fa-solid fa-shop"></i>
+        <span>Market</span>
+      </div>
+      <div class="nav-btn" id="btn-polls" onclick="switchView('polls')">
+        <i class="fa-solid fa-chart-simple"></i>
+        <span>Polls</span>
+      </div>
+      <div class="nav-btn" id="btn-you" onclick="switchView('you')">
+        <div style="font-size: 1.2rem;">🐱</div>
+        <span>You</span>
+      </div>
+    </sidebar>
+
+    <main>
+      <!-- Home Canvas Screen -->
+      <section id="view-home" class="view-section active">
+        <div class="shape square-green"></div>
+        <div class="shape pentagon-orange"></div>
+        <div class="shape triangle-red"></div>
+        <div class="shape triangle-red-right"></div>
+        <div class="shape circle-blue"></div>
+
+        <div class="hero-title">
+          <div class="diagonal-logo">
+            <div class="app">APP</div>
+            <div class="ssule"><span class="s-letter">S</span><span class="sule-letters">sule</span></div>
+          </div>
+          <p class="hero-subtitle">A chatting community For Gamers</p>
+        </div>
+
+        <div class="daily-reward-card" onclick="claimReward()">
+          <div class="coin-icon"></div>
+          <div style="font-size: 1.5rem; font-weight: 800; line-height: 1.1;" id="rewardCardText">
+            Claim your 365th<br>Daily Reward! <i class="fa-solid fa-fire" style="color:#ff3b5c;"></i>
+          </div>
+          <i class="fa-solid fa-box-open" style="font-size: 1.8rem; color: #704000;"></i>
+        </div>
+      </section>
+
+      <!-- Hubs Screen -->
+      <section id="view-hubs" class="view-section">
+        <div class="hub-subheader">
+          <button class="hub-back-link" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i> Back to Lobby</button>
+          <button class="hub-support-btn" onclick="contactSupport()">Contact Support</button>
+        </div>
+        <div class="page-header">Gaming Hubs</div>
+        <div class="hub-toolbar">
+          <input type="text" id="hubSearchInput" class="hub-search-input" placeholder="Search Hubs..." oninput="renderHubs()">
+          <select id="hubSortSelect" class="hub-sort-select" onchange="renderHubs()">
+            <option value="recommended">Sort By: Recommended</option>
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="most-viewed">Most Viewed</option>
+            <option value="members-desc">Member Count (Most to Least)</option>
+            <option value="members-asc">Member Count (Least to Most)</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
+        </div>
+        <div class="hub-tiles" id="hubTiles"></div>
+        <div class="hub-pagination" id="hubPagination"></div>
+        <button class="hub-create-btn" onclick="addHub()">
+          <span class="plus-badge">+</span> Create Your Own Server!
+        </button>
+      </section>
+
+      <!-- Direct Messages View with Search User Feature -->
+      <section id="view-dms" class="view-section">
+        <div class="page-header">Direct Messages</div>
+        <div class="chat-container">
+          <div class="dm-sidebar">
+            <div class="search-user-box">
+              <input type="text" id="userSearchInput" class="search-user-input" placeholder="Search user to text..." oninput="filterUsers()">
+            </div>
+            <div class="dm-list" id="dmUserList">
+              <!-- Dynamically populated users -->
+            </div>
+          </div>
+
+          <div class="chat-window">
+            <div class="chat-header" id="activeChatHeader">Select a user to message</div>
+            <div class="messages-area" id="messageArea">
+              <!-- Chat messages display here -->
+            </div>
+            <div class="chat-input-area">
+              <input type="text" id="chatInput" class="auth-input" placeholder="Type a message...">
+              <button class="auth-btn" style="width: auto; padding: 0 20px;" onclick="sendMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Marketplace Screen -->
+      <section id="view-marketplace" class="view-section">
+        <div class="shape square-green"></div>
+        <div class="shape pentagon-orange"></div>
+        <div class="shape triangle-red"></div>
+        <div class="shape triangle-red-right"></div>
+        <div class="shape circle-blue"></div>
+
+        <div class="market-content">
+        <div class="page-header">Marketplace</div>
+        <div class="market-layout">
+          <div class="market-feature-card">
+            <div class="feature-header">Themes</div>
+            <div class="feature-body">
+              <h4>Custom UI Wording:</h4>
+              <p>Completely transforms the app's vocabulary on your screen to match your active theme.</p>
+              <ul class="feature-bullets">
+                <li>Unlocks an exclusive title next to your profile.</li>
+                <li>Equip a custom badge on your profile to show off yo style.</li>
+              </ul>
+              <div class="feature-price">$3.99<small>1800 Caps</small></div>
+            </div>
+          </div>
+
+          <div class="market-pricing">
+            <h2>Pricing</h2>
+            <div class="pricing-grid" id="pricingGrid">
+              <div class="price-card" style="--price-color: var(--neon-blue)" onclick="buyCaps('Tiny Bundle', 0.99, 300)">
+                <div class="price-header">Tiny Bundle $0.99</div>
+                <div class="price-body">300 Caps</div>
+              </div>
+              <div class="price-card" style="--price-color: var(--neon-green)" onclick="buyCaps('Bigger Bundle', 1.99, 700)">
+                <div class="price-header">Bigger Bundle $1.99</div>
+                <div class="price-body">700 Caps</div>
+              </div>
+              <div class="price-card" style="--price-color: var(--neon-purple)" onclick="buyCaps('Biggerer Bundle', 4.99, 1800)">
+                <div class="price-header">Biggerer Bundle $4.99</div>
+                <div class="price-body">1800 Caps</div>
+              </div>
+              <div class="price-card" style="--price-color: var(--neon-orange)" onclick="buyCaps('Biggest Bundle', 9.99, 4000)">
+                <div class="price-header">Biggest Bundle $9.99</div>
+                <div class="price-body">4000 Caps</div>
+              </div>
+            </div>
+
+            <div class="custom-bundle-card">
+              <div class="feature-header" style="background: linear-gradient(120deg, var(--neon-blue), var(--neon-green));">Custom Bundle</div>
+              <div class="feature-body">
+                <div class="custom-toggle">
+                  <button class="custom-toggle-btn active" id="customTabCaps" onclick="setCustomMode('caps')">I want this many Caps</button>
+                  <button class="custom-toggle-btn" id="customTabPrice" onclick="setCustomMode('price')">I want to spend $</button>
+                </div>
+                <input type="number" id="customAmountInput" class="auth-input" placeholder="Enter an amount..." min="0" oninput="updateCustomPreview()">
+                <div class="custom-preview" id="customPreview">Enter an amount above to build your bundle.</div>
+                <button class="auth-btn custom-buy-btn" id="customBuyBtn" style="background: var(--neon-blue);" onclick="buyCustomBundle()" disabled>Buy Custom Bundle</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+
+      <!-- Caps Store: spend Caps balance on cosmetics (different from Marketplace, which buys Caps with real money) -->
+      <section id="view-capsstore" class="view-section">
+        <div class="page-header">Caps Store</div>
+        <p style="color: var(--text-muted); font-size: 1.4rem; margin-bottom: 20px;">Spend your Caps on themes, badges, and other cosmetics.</p>
+        <div class="store-grid">
+          <div class="store-item-card theme-item-card" onclick="buyBigBackTheme()">
+            <div class="theme-item-art">
+              <span class="theme-emoji e1">🍕</span>
+              <span class="theme-emoji e2">🍗</span>
+              <span class="theme-emoji e3">🍔</span>
+              <span class="theme-emoji e4">🍟</span>
+            </div>
+            <div class="store-item-body">
+              <h3>Big Back Theme</h3>
+              <p class="theme-item-tagline">Full vocabulary reskin + exclusive badge, reaction &amp; emojis</p>
+              <button class="store-item-buy theme-buy-btn" onclick="event.stopPropagation(); buyBigBackTheme()"><i class="fa-solid fa-coins"></i> 1800 Caps</button>
+            </div>
+          </div>
+          <div class="store-item-card" style="--item-color: var(--neon-orange)">
+            <div class="store-item-art"><i class="fa-solid fa-crown"></i></div>
+            <div class="store-item-body">
+              <h3>VIP Badge</h3>
+              <button class="store-item-buy" onclick="buyStoreItem('VIP Badge', 800)"><i class="fa-solid fa-coins"></i> 800 Caps</button>
+            </div>
+          </div>
+          <div class="store-item-card" style="--item-color: var(--neon-green)">
+            <div class="store-item-art"><i class="fa-solid fa-user-astronaut"></i></div>
+            <div class="store-item-body">
+              <h3>Neon Avatar Pack</h3>
+              <button class="store-item-buy" onclick="buyStoreItem('Neon Avatar Pack', 500)"><i class="fa-solid fa-coins"></i> 500 Caps</button>
+            </div>
+          </div>
+          <div class="store-item-card" style="--item-color: var(--neon-blue)">
+            <div class="store-item-art"><i class="fa-solid fa-paintbrush"></i></div>
+            <div class="store-item-body">
+              <h3>Custom Username Color</h3>
+              <button class="store-item-buy" onclick="buyStoreItem('Custom Username Color', 400)"><i class="fa-solid fa-coins"></i> 400 Caps</button>
+            </div>
+          </div>
+          <div class="store-item-card" style="--item-color: var(--neon-red)">
+            <div class="store-item-art"><i class="fa-solid fa-pizza-slice"></i></div>
+            <div class="store-item-body">
+              <h3>Exclusive Title: "Pizza Lord"</h3>
+              <button class="store-item-buy" onclick="buyStoreItem('Exclusive Title: Pizza Lord', 250)"><i class="fa-solid fa-coins"></i> 250 Caps</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Polls Screen -->
+      <section id="view-polls" class="view-section">
+        <div class="page-header">Gamer Polls</div>
+        <p style="font-size: 1.5rem;">No active polls currently.</p>
+      </section>
+
+      <!-- Profile Screen -->
+      <section id="view-you" class="view-section">
+        <div class="page-header">Your Profile</div>
+        <div class="profile-box">
+          <div class="profile-avatar" id="profileAvatar">🐱</div>
+          <h2 id="profileName" style="font-size: 2.5rem;">Gamemaster</h2>
+          <p id="profileEmail" style="font-size: 1.6rem; color: var(--text-muted);">gamer@appssule.com</p>
+          <div style="font-size: 1.5rem; color: var(--text-muted);">Streak: <span id="profileStreak">365</span> days 🔥</div>
+          <div style="font-size: 1.5rem; color: var(--text-muted);">Caps: <span id="profileCaps">100</span> 🪙</div>
+          <button class="auth-btn" style="background: var(--neon-red);" onclick="logoutUser()">Log Out</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Big Back Theme purchase confirmation modal -->
+  <div id="themeModalOverlay" class="theme-modal-overlay">
+    <div class="theme-modal-box">
+      <div class="theme-modal-header">
+        <span class="theme-emoji" style="top: 8px; left: 12px;">🍕</span>
+        <span class="theme-emoji" style="bottom: 6px; right: 14px; font-size: 1.8rem;">🍟</span>
+        Big Back Theme Unlocked!
+      </div>
+      <div class="theme-modal-body">
+        <p>Your whole UI vocabulary just got a glow-up 🍔</p>
+        <ul class="theme-perk-list">
+          <li><span>Caps</span><span>&rarr; Waffles</span></li>
+          <li><span>Hubs</span><span>&rarr; Diners/Restaurants</span></li>
+          <li><span>Profile</span><span>&rarr; Menu</span></li>
+          <li><span>Settings</span><span>&rarr; Kitchen Setup</span></li>
+          <li><span>Friends</span><span>&rarr; Table Mates</span></li>
+          <li><span>Badge</span><span>Burger And Fries</span></li>
+          <li><span>Reaction</span><span>PIZZA!!! WHAAAA 🍕</span></li>
+          <li><span>Emojis</span><span>Slurper, Shake It Up</span></li>
+        </ul>
+        <button class="theme-modal-close" onclick="closeThemeModal()">Let's eat!</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // System Registered Users Store
+    const registeredUsers = [
+      { username: 'PixelKnight', email: 'pixel@app.com', password: '123', streak: 12, coins: 220 },
+      { username: 'CyberSamurai', email: 'cyber@app.com', password: '123', streak: 47, coins: 480 },
+      { username: 'NeonRider', email: 'neon@app.com', password: '123', streak: 8, coins: 150 },
+      { username: 'Gamemaster', email: 'gamer@appssule.com', password: '123456', streak: 365, coins: 100 },
+      { username: 'Sleepyyy', email: 'sleepyyy@gmail.com', password: 'sleepyyy123', streak: 1, coins: 100 }
+    ];
+
+    // Direct Messages Memory Database
+    const chatMemory = {
+      'PixelKnight': ['Yo! Are we running squads tonight?', 'Let me know when you are ready.'],
+      'CyberSamurai': ['Hey! Did you check out the new game clip?'],
+      'NeonRider': ['GGs on that match earlier!']
+    };
+
+    // Gaming Hubs Store
+    const hubIcons = ['fa-gamepad', 'fa-cubes', 'fa-dragon', 'fa-trophy', 'fa-rocket', 'fa-chess-knight', 'fa-fire', 'fa-shield-halved'];
+    const hubColors = ['#ff3b5c', '#0088ff', '#10b981', '#f59e0b', '#8b5cf6', '#ff5db0'];
+    let hubs = [
+      { name: 'Valorant Central', icon: 'fa-gamepad', color: '#ff3b5c', createdAt: Date.now() - 400000, views: 1240, members: 312 },
+      { name: 'Minecraft Build Zone', icon: 'fa-cubes', color: '#10b981', createdAt: Date.now() - 300000, views: 980, members: 540 },
+      { name: 'RPG Adventurers', icon: 'fa-dragon', color: '#8b5cf6', createdAt: Date.now() - 200000, views: 410, members: 88 },
+      { name: 'Esports Lounge', icon: 'fa-trophy', color: '#0088ff', createdAt: Date.now() - 100000, views: 2100, members: 745 }
+    ];
+    const HUB_TILE_MIN_WIDTH = 230;
+    const HUB_TILE_GAP = 20;
+    const HUB_ROWS_TARGET = 3; // aim to fill about 3 rows per page, however many columns fit
+    let hubPage = 1;
+
+    // Figure out how many hub tiles actually fit on screen right now (columns x target rows)
+    function calcHubsPerPage() {
+      const container = document.getElementById('hubTiles');
+      const containerWidth = container ? container.clientWidth : 900;
+      const columns = Math.max(1, Math.floor((containerWidth + HUB_TILE_GAP) / (HUB_TILE_MIN_WIDTH + HUB_TILE_GAP)));
+      return columns * HUB_ROWS_TARGET;
+    }
+
+    function renderHubs() {
+      const query = (document.getElementById('hubSearchInput')?.value || '').toLowerCase();
+      const sortMode = document.getElementById('hubSortSelect')?.value || 'recommended';
+
+      let filtered = hubs.filter(h => h.name.toLowerCase().includes(query));
+
+      if (sortMode === 'name-asc') {
+        filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+      } else if (sortMode === 'name-desc') {
+        filtered = [...filtered].sort((a, b) => b.name.localeCompare(a.name));
+      } else if (sortMode === 'most-viewed') {
+        filtered = [...filtered].sort((a, b) => b.views - a.views);
+      } else if (sortMode === 'members-desc') {
+        filtered = [...filtered].sort((a, b) => b.members - a.members);
+      } else if (sortMode === 'members-asc') {
+        filtered = [...filtered].sort((a, b) => a.members - b.members);
+      } else if (sortMode === 'newest') {
+        filtered = [...filtered].sort((a, b) => b.createdAt - a.createdAt);
+      } else if (sortMode === 'oldest') {
+        filtered = [...filtered].sort((a, b) => a.createdAt - b.createdAt);
+      }
+      // 'recommended' just keeps the original/default order
+
+      const hubsPerPage = calcHubsPerPage();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / hubsPerPage));
+      if (hubPage > totalPages) hubPage = totalPages;
+
+      const start = (hubPage - 1) * hubsPerPage;
+      const pageItems = filtered.slice(start, start + hubsPerPage);
+
+      const tilesElem = document.getElementById('hubTiles');
+      tilesElem.innerHTML = pageItems.length
+        ? pageItems.map(h => `
+            <div class="hub-slot">
+              <div class="hub-tile" style="--tile-color: ${h.color}" onclick="alert('Joining ${h.name}... (not wired to a real server yet!)')">
+                <div class="hub-tile-art"><i class="fa-solid ${h.icon}"></i></div>
+                <div class="hub-tile-label">${h.name}</div>
+              </div>
+              <div class="hub-tile-caption">Join for fun</div>
+            </div>
+          `).join('')
+        : `<div style="color: var(--text-muted); font-size: 1.5rem; padding: 20px;">No hubs found. Try a different search or create one!</div>`;
+
+      renderHubPagination(totalPages);
+    }
+
+    function renderHubPagination(totalPages) {
+      const pagElem = document.getElementById('hubPagination');
+      let html = `<button class="page-arrow" ${hubPage === 1 ? 'disabled' : ''} onclick="goToHubPage(hubPage - 1)"><i class="fa-solid fa-chevron-left"></i></button>`;
+
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-num ${i === hubPage ? 'active' : ''}" onclick="goToHubPage(${i})">${i}</button>`;
+      }
+
+      html += `<button class="page-arrow" ${hubPage === totalPages ? 'disabled' : ''} onclick="goToHubPage(hubPage + 1)"><i class="fa-solid fa-chevron-right"></i></button>`;
+      pagElem.innerHTML = html;
+    }
+
+    function goToHubPage(page) {
+      hubPage = page;
+      renderHubs();
+    }
+
+    function addHub() {
+      const name = prompt('Name your new hub:');
+      if (!name || !name.trim()) return;
+      const icon = hubIcons[Math.floor(Math.random() * hubIcons.length)];
+      const color = hubColors[Math.floor(Math.random() * hubColors.length)];
+      hubs.push({ name: name.trim(), icon, color, createdAt: Date.now(), views: 0, members: 1 });
+      hubPage = Math.ceil(hubs.length / calcHubsPerPage()); // jump to the page containing the new hub
+      renderHubs();
+    }
+
+    function contactSupport() {
+      alert('Support requests aren\'t wired up yet — this is just a placeholder button for now!');
+    }
+
+    let currentUser = null;
+    let activeChatUser = null;
+
+    // Sidebar Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+        sidebar.classList.remove('open');
+      }
+    });
+
+    // View Switching
+    function switchView(viewId) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      const targetView = document.getElementById(`view-${viewId}`);
+      if (targetView) targetView.classList.add('active');
+
+      const targetBtn = document.getElementById(`btn-${viewId}`);
+      if (targetBtn) targetBtn.classList.add('active');
+
+      sidebar.classList.remove('open');
+    }
+
+    // Auth Switching
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(el => el.classList.remove('active'));
+      document.getElementById('authError').style.display = 'none';
+
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      document.getElementById(`form-${tab}`).classList.add('active');
+    }
+
+    // Handle Login with Email Check
+    function handleLogin(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const errorElem = document.getElementById('authError');
+
+      if (!email || !password) {
+        errorElem.innerText = 'Please fill in both fields.';
+        errorElem.style.display = 'block';
+        return;
+      }
+
+      // Check user credentials
+      const user = registeredUsers.find(u => u.email === email && u.password === password);
+
+      if (user) {
+        errorElem.style.display = 'none';
+        loginUserSession(user);
+      } else {
+        errorElem.innerText = 'Incorrect email or password!';
+        errorElem.style.display = 'block';
+      }
+    }
+
+    // Handle User Registration
+    function handleRegister(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const username = document.getElementById('registerUsername').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      const errorElem = document.getElementById('authError');
+
+      if (!username || !email || !password) {
+        errorElem.innerText = 'Please fill in all fields.';
+        errorElem.style.display = 'block';
+        return;
+      }
+
+      // Require a real email shape: something@something.tld
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+      if (!emailPattern.test(email)) {
+        errorElem.innerText = 'Please enter a valid email address (e.g. name@gmail.com).';
+        errorElem.style.display = 'block';
+        return;
+      }
+
+      const existingUser = registeredUsers.find(u => u.email === email);
+      if (existingUser) {
+        errorElem.innerText = 'Email already registered!';
+        errorElem.style.display = 'block';
+        return;
+      }
+
+      errorElem.style.display = 'none';
+      const newUser = { username, email, password, streak: 1, coins: 100 };
+      registeredUsers.push(newUser);
+      loginUserSession(newUser);
+    }
+
+    // Turns a number into its ordinal form: 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 11 -> "11th"...
+    function ordinal(n) {
+      const rem100 = n % 100;
+      if (rem100 >= 11 && rem100 <= 13) return `${n}th`;
+      switch (n % 10) {
+        case 1: return `${n}st`;
+        case 2: return `${n}nd`;
+        case 3: return `${n}rd`;
+        default: return `${n}th`;
+      }
+    }
+
+    function initials(username) {
+      return username.trim().slice(0, 2).toUpperCase();
+    }
+
+    function loginUserSession(user) {
+      currentUser = user;
+      document.getElementById('headerUsername').innerText = user.username;
+      document.getElementById('profileName').innerText = user.username;
+      document.getElementById('profileEmail').innerText = user.email;
+      updateCapsDisplay(user.coins);
+      document.getElementById('streakCount').innerText = user.streak;
+      document.getElementById('profileStreak').innerText = user.streak;
+      document.getElementById('rewardCardText').innerHTML =
+        `Claim your ${ordinal(user.streak)}<br>Daily Reward! <i class="fa-solid fa-fire" style="color:#ff3b5c;"></i>`;
+
+      const avatarInitials = initials(user.username);
+      document.getElementById('headerAvatar').innerText = avatarInitials;
+      document.getElementById('profileAvatar').innerText = avatarInitials;
+
+      document.getElementById('auth-overlay').style.display = 'none';
+      renderUserList();
+    }
+
+    function logoutUser() {
+      document.getElementById('auth-overlay').style.display = 'flex';
+      switchView('home');
+    }
+
+    // Render Searchable DM User List
+    function renderUserList(filter = '') {
+      const listElem = document.getElementById('dmUserList');
+      listElem.innerHTML = '';
+
+      const usersToDisplay = registeredUsers.filter(u => 
+        u.username !== currentUser?.username && 
+        u.username.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      if (usersToDisplay.length === 0) {
+        listElem.innerHTML = `<div style="padding: 15px; color: var(--text-muted); font-size: 1.4rem;">No users found</div>`;
+        return;
+      }
+
+      usersToDisplay.forEach(u => {
+        const item = document.createElement('div');
+        item.className = `dm-item ${activeChatUser === u.username ? 'active' : ''}`;
+        item.innerHTML = `<i class="fa-solid fa-user"></i> <span>${u.username}</span>`;
+        item.onclick = () => openChatWithUser(u.username);
+        listElem.appendChild(item);
+      });
+    }
+
+    function filterUsers() {
+      const query = document.getElementById('userSearchInput').value;
+      renderUserList(query);
+    }
+
+    // Open Chat Room with Selected User
+    function openChatWithUser(username) {
+      activeChatUser = username;
+      document.getElementById('activeChatHeader').innerText = `Chatting with: ${username}`;
+      renderUserList(document.getElementById('userSearchInput').value);
+
+      if (!chatMemory[username]) {
+        chatMemory[username] = [];
+      }
+
+      renderMessages();
+    }
+
+    function renderMessages() {
+      const area = document.getElementById('messageArea');
+      area.innerHTML = '';
+
+      if (!activeChatUser) return;
+
+      const msgs = chatMemory[activeChatUser] || [];
+      msgs.forEach(msg => {
+        const bubble = document.createElement('div');
+        bubble.className = typeof msg === 'string' ? 'message-bubble' : `message-bubble ${msg.type}`;
+        bubble.innerText = typeof msg === 'string' ? msg : msg.text;
+        area.appendChild(bubble);
+      });
+
+      area.scrollTop = area.scrollHeight;
+    }
+
+    // Send Message
+    function sendMessage() {
+      if (!activeChatUser) {
+        alert('Please select or search for a user to message first!');
+        return;
+      }
+
+      const input = document.getElementById('chatInput');
+      if (input.value.trim() !== '') {
+        if (!chatMemory[activeChatUser]) chatMemory[activeChatUser] = [];
+        
+        chatMemory[activeChatUser].push({ text: input.value, type: 'mine' });
+        input.value = '';
+        renderMessages();
+      }
+    }
+
+    function claimReward() {
+      if (!currentUser) {
+        alert('Log in first to claim your daily reward!');
+        return;
+      }
+      currentUser.coins += 50;
+      currentUser.streak += 1;
+      updateCapsDisplay(currentUser.coins);
+      document.getElementById('streakCount').innerText = currentUser.streak;
+      document.getElementById('profileStreak').innerText = currentUser.streak;
+      document.getElementById('rewardCardText').innerHTML =
+        `Claim your ${ordinal(currentUser.streak)}<br>Daily Reward! <i class="fa-solid fa-fire" style="color:#ff3b5c;"></i>`;
+      alert(`Day ${currentUser.streak} streak! Claimed 50 Caps!`);
+    }
+
+    // Keeps every place the Caps balance is shown in sync (header badge, dropdown, profile)
+    function updateCapsDisplay(amount) {
+      document.getElementById('coinCount').innerText = amount;
+      document.getElementById('capsMenuAmount').innerText = amount.toLocaleString();
+      document.getElementById('profileCaps').innerText = amount;
+    }
+
+    // Caps dropdown menu (click the badge in the header)
+    const capsBadge = document.getElementById('capsBadge');
+    const capsMenu = document.getElementById('capsMenu');
+
+    capsBadge.addEventListener('click', (e) => {
+      e.stopPropagation();
+      capsMenu.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!capsMenu.contains(e.target) && !capsBadge.contains(e.target)) {
+        capsMenu.classList.remove('open');
+      }
+    });
+
+    function capsMenuGo(viewId) {
+      capsMenu.classList.remove('open');
+      switchView(viewId);
+    }
+
+    // Marketplace: buy a bundle of Caps (this app's one currency - same balance shown top-left)
+    function buyCaps(bundleName, price, capsAmount) {
+      if (!currentUser) {
+        alert('Log in first to make a purchase!');
+        return;
+      }
+      const confirmed = confirm(`Buy the ${bundleName} for $${price.toFixed(2)} (${capsAmount} Caps)?\n\n(No real payment processor is connected yet - this just simulates the purchase.)`);
+      if (!confirmed) return;
+
+      currentUser.coins += capsAmount;
+      updateCapsDisplay(currentUser.coins);
+      alert(`Purchase simulated! You now have ${currentUser.coins} Caps.`);
+    }
+
+    // Custom Bundle: fit a line through the Tiny (300 caps -> $0.99) and Biggest (4000 caps -> $9.99)
+    // bundles, so a custom amount follows the same "bigger = better value" curve as the fixed tiers.
+    const CUSTOM_REF_LOW = { caps: 300, price: 0.99 };
+    const CUSTOM_REF_HIGH = { caps: 4000, price: 9.99 };
+    const CUSTOM_SLOPE = (CUSTOM_REF_HIGH.price - CUSTOM_REF_LOW.price) / (CUSTOM_REF_HIGH.caps - CUSTOM_REF_LOW.caps);
+    const CUSTOM_INTERCEPT = CUSTOM_REF_LOW.price - CUSTOM_SLOPE * CUSTOM_REF_LOW.caps;
+    const MIN_CUSTOM_CAPS = 50;
+
+    function priceFromCaps(caps) {
+      return CUSTOM_SLOPE * caps + CUSTOM_INTERCEPT;
+    }
+    function capsFromPrice(price) {
+      return (price - CUSTOM_INTERCEPT) / CUSTOM_SLOPE;
+    }
+
+    let customMode = 'caps'; // 'caps' or 'price'
+
+    function setCustomMode(mode) {
+      customMode = mode;
+      document.getElementById('customTabCaps').classList.toggle('active', mode === 'caps');
+      document.getElementById('customTabPrice').classList.toggle('active', mode === 'price');
+      const input = document.getElementById('customAmountInput');
+      input.placeholder = mode === 'caps' ? 'How many Caps do you want?' : 'How much do you want to spend ($)?';
+      input.value = '';
+      updateCustomPreview();
+    }
+
+    function updateCustomPreview() {
+      const previewElem = document.getElementById('customPreview');
+      const buyBtn = document.getElementById('customBuyBtn');
+      const raw = document.getElementById('customAmountInput').value;
+      const value = parseFloat(raw);
+
+      if (!raw || isNaN(value) || value <= 0) {
+        previewElem.innerHTML = 'Enter an amount above to build your bundle.';
+        buyBtn.disabled = true;
+        return;
+      }
+
+      let caps, price;
+      if (customMode === 'caps') {
+        caps = Math.round(value);
+        price = Math.max(priceFromCaps(caps), 0.01);
+      } else {
+        price = value;
+        caps = Math.round(capsFromPrice(price));
+      }
+
+      if (caps < MIN_CUSTOM_CAPS) {
+        previewElem.innerHTML = `Minimum custom bundle is ${MIN_CUSTOM_CAPS} Caps (about $${priceFromCaps(MIN_CUSTOM_CAPS).toFixed(2)}).`;
+        buyBtn.disabled = true;
+        return;
+      }
+
+      const rate = caps / price;
+      previewElem.innerHTML = `You'll get <strong>${caps.toLocaleString()} Caps</strong> for <strong>$${price.toFixed(2)}</strong>
+        <span class="rate-note">~${rate.toFixed(0)} Caps per $1 - the more you buy, the better the rate.</span>`;
+      buyBtn.disabled = false;
+      buyBtn.dataset.caps = caps;
+      buyBtn.dataset.price = price.toFixed(2);
+    }
+
+    function buyCustomBundle() {
+      if (!currentUser) {
+        alert('Log in first to make a purchase!');
+        return;
+      }
+      const btn = document.getElementById('customBuyBtn');
+      const caps = parseInt(btn.dataset.caps, 10);
+      const price = parseFloat(btn.dataset.price);
+      if (!caps || !price) return;
+
+      const confirmed = confirm(`Buy a Custom Bundle: ${caps.toLocaleString()} Caps for $${price.toFixed(2)}?\n\n(No real payment processor is connected yet - this just simulates the purchase.)`);
+      if (!confirmed) return;
+
+      currentUser.coins += caps;
+      updateCapsDisplay(currentUser.coins);
+      alert(`Purchase simulated! You now have ${currentUser.coins} Caps.`);
+
+      document.getElementById('customAmountInput').value = '';
+      updateCustomPreview();
+    }
+
+    // Caps Store: spend Caps balance on cosmetics (deducts from the same balance Marketplace adds to)
+    function buyStoreItem(itemName, cost) {
+      if (!currentUser) {
+        alert('Log in first to make a purchase!');
+        return;
+      }
+      if (currentUser.coins < cost) {
+        const short = cost - currentUser.coins;
+        const goBuy = confirm(`Not enough Caps! You need ${short.toLocaleString()} more to buy "${itemName}".\n\nGo to the Marketplace to buy more Caps?`);
+        if (goBuy) switchView('marketplace');
+        return;
+      }
+      const confirmed = confirm(`Buy "${itemName}" for ${cost.toLocaleString()} Caps?`);
+      if (!confirmed) return;
+
+      currentUser.coins -= cost;
+      updateCapsDisplay(currentUser.coins);
+      alert(`You bought "${itemName}"! (Not actually applied anywhere yet - this just spends the Caps.)`);
+    }
+
+    // Big Back Theme: same buy flow as buyStoreItem, but with a themed confirmation modal instead of alert()
+    function buyBigBackTheme() {
+      const cost = 1800;
+      if (!currentUser) {
+        alert('Log in first to make a purchase!');
+        return;
+      }
+      if (currentUser.coins < cost) {
+        const short = cost - currentUser.coins;
+        const goBuy = confirm(`Not enough Caps! You need ${short.toLocaleString()} more for the Big Back Theme.\n\nGo to the Marketplace to buy more Caps?`);
+        if (goBuy) switchView('marketplace');
+        return;
+      }
+      const confirmed = confirm(`Buy the Big Back Theme for ${cost.toLocaleString()} Caps?`);
+      if (!confirmed) return;
+
+      currentUser.coins -= cost;
+      updateCapsDisplay(currentUser.coins);
+      document.getElementById('themeModalOverlay').classList.add('open');
+    }
+
+    function closeThemeModal() {
+      document.getElementById('themeModalOverlay').classList.remove('open');
+    }
+
+    renderHubs(); // initial paint of the Hubs grid + pagination
+
+    // Re-fit the hub grid if the window is resized while viewing Hubs
+    let hubResizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(hubResizeTimer);
+      hubResizeTimer = setTimeout(() => {
+        if (document.getElementById('view-hubs').classList.contains('active')) {
+          renderHubs();
+        }
+      }, 200);
+    });
+  </script>
+</body>
+</html>
